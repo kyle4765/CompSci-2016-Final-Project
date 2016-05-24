@@ -38,18 +38,18 @@ public class Game extends JFrame implements KeyListener{
 
     JPanel character = new JPanel();
     character.setBounds(185,185,30,30);
-    //character.setBackground(new Color(255,255,255,0));
+    character.setBackground(new Color(255,255,255,0));
 
-      JLabel boi = new JLabel();
-      ImageIcon pix = new ImageIcon("4nX44_A7copy");
-      boi.setIcon(pix);
-      boi.setText("BOI");
-      boi.setBounds(185,185,30,30);
-      boi.setVisible(true);
-      boi.setVerticalTextPosition(JLabel.BOTTOM);
-      boi.setHorizontalTextPosition(JLabel.CENTER);
+      JLabel characterImage = new JLabel();
+      ImageIcon pix = new ImageIcon("4nX44_A7copy.png");
+      characterImage.setIcon(pix);
+      //characterImage.setText("BOI");
+      characterImage.setBounds(0,0,30,30);
+      characterImage.setVisible(true);
+      characterImage.setVerticalTextPosition(JLabel.BOTTOM);
+      characterImage.setHorizontalTextPosition(JLabel.CENTER);
 
-    character.add(boi);
+    character.add(characterImage);
 
     frame.getContentPane().add(panel);
 
