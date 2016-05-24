@@ -1,0 +1,10 @@
+¥ Add image to character
+¥ Add randomly generated coins
+¥ Add moving enemies (start with stationary enemies)
+¥ Add water areas
+¥ Add timer
+
+------------------
+Top Corner of Island --> (180,180)
+Bottom Corner of Island --> (-980,-980)
+	Random X and Y values must be more than -980 and less than 180

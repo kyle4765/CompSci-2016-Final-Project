@@ -40,11 +40,12 @@ public class Game extends JFrame implements KeyListener{
     character.setBounds(185,185,30,30);
     //character.setBackground(new Color(255,255,255,0));
 
-      JLabel boi = new JLabel("Character");
-      ImageIcon picture = new ImageIcon("4nX44_A7copy.png");
-      boi.setIcon(picture);
-      boi.setBounds(0,0,30,30);
-      boi.setVisible(false);
+      JLabel boi = new JLabel();
+      ImageIcon pix = new ImageIcon("4nX44_A7copy");
+      boi.setIcon(pix);
+      boi.setText("BOI");
+      boi.setBounds(185,185,30,30);
+      boi.setVisible(true);
       boi.setVerticalTextPosition(JLabel.BOTTOM);
       boi.setHorizontalTextPosition(JLabel.CENTER);
 
@@ -63,26 +64,26 @@ public class Game extends JFrame implements KeyListener{
 
         //Left
         if(e.getKeyCode() == 37 ){
-         if( !(PanelXCoord+5>185)){
-            PanelXCoord+=5;
+         if( !(PanelXCoord+10>185)){
+            PanelXCoord+=10;
          }
         }
         //Right
         else if (e.getKeyCode() == 39 ){
-         if( !(PanelXCoord-5<-985)){
-            PanelXCoord-=5;
+         if( !(PanelXCoord-10<-985)){
+            PanelXCoord-=10;
          }
         }
         //Up
         else if (e.getKeyCode() == 38 ){
-         if( !(PanelYCoord+5>185)){
-            PanelYCoord+=5;
+         if( !(PanelYCoord+10>185)){
+            PanelYCoord+=10;
          }
         }
         //Down
         else if (e.getKeyCode() == 40 ){
-         if( !(PanelYCoord-5<-985)){
-            PanelYCoord-=5;
+         if( !(PanelYCoord-10<-985)){
+            PanelYCoord-=10;
          }
         }
 
