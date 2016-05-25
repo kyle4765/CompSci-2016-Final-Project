@@ -10,7 +10,21 @@ import java.awt.event.KeyEvent;
 public class Game extends JFrame implements KeyListener{
 
   static JFrame frame = new JFrame(".: Game :.");
-  static JPanel panel = new JPanel();
+  static JPanel panel = new JPanel(){
+                 @Override
+           protected void paintComponent(Graphics grphcs) {
+               super.paintComponent(grphcs);
+               Graphics2D g2d = (Graphics2D) grphcs;
+               g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                       RenderingHints.VALUE_ANTIALIAS_ON);
+               GradientPaint gp = new GradientPaint(
+                  0, 0, new Color(4, 219, 0),
+                  getWidth(), getHeight(), new Color(0, 154, 57));
+               g2d.setPaint(gp);
+               g2d.fillRect(0, 0, getWidth(), getHeight());
+
+        }
+      };
   static JLabel label = new JLabel();
 
   static int PanelXCoord = -300;
@@ -19,8 +33,12 @@ public class Game extends JFrame implements KeyListener{
   static ImageIcon pix;
   static int WalkOrRun = 0;
 
+  static JLabel time;
+  static int timerRemaining = 59;
+
   public static void main (String [] args){
     displayGame();
+    timerStart(timerRemaining);
   }
 
   public void init()
@@ -43,16 +61,22 @@ public class Game extends JFrame implements KeyListener{
     character.setBounds(175,175,50,50);
     character.setBackground(new Color(255,255,255,0));
 
-      JLabel characterImage = new JLabel();
-      pix = new ImageIcon("Char-Walk-Right.png");
-      characterImage.setIcon(pix);
-      //characterImage.setText("BOI");
-      characterImage.setBounds(0,0,50,50);
-      characterImage.setVisible(true);
-      characterImage.setVerticalTextPosition(JLabel.BOTTOM);
-      characterImage.setHorizontalTextPosition(JLabel.CENTER);
+    JLabel characterImage = new JLabel();
+    pix = new ImageIcon("Char-Walk-Right.png");
+    characterImage.setIcon(pix);
+    characterImage.setBounds(0,0,50,50);
+    characterImage.setVisible(true);
+    characterImage.setVerticalTextPosition(JLabel.BOTTOM);
+    characterImage.setHorizontalTextPosition(JLabel.CENTER);
 
     character.add(characterImage);
+
+    JPanel timer = new JPanel();
+    timer.setBounds(320,0,80,30);
+
+    time = new JLabel("Time:  "+timerRemaining);
+    time.setBounds(0,-5,80,30);
+    timer.add(time);
 
     frame.getContentPane().add(panel);
 
@@ -144,13 +168,26 @@ public class Game extends JFrame implements KeyListener{
     frame = new JFrame(".: Game :.");
     //frame.setResizable(false);
     frame.add(character);
+    frame.add(timer);
     frame.add(panel);
     frame.add(water);
-
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.pack();
     frame.setVisible(true);
     frame.setSize(400,400);
+  }
+
+  public static void timerStart(int t){
+    try {
+    while (true) {
+        System.out.println(timerRemaining);
+        timerRemaining--;
+        time.setText("Time:  "+timerRemaining);
+        Thread.sleep(1000);
+    }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
   }
 
   @Override
@@ -164,6 +201,4 @@ public class Game extends JFrame implements KeyListener{
   @Override
   public void keyReleased(KeyEvent e) {
   }
-
-
 }
