@@ -54,11 +54,6 @@ public class Game extends JFrame implements KeyListener{
         moveCounter();
       }
   };
-  static Thread thread3 = new Thread() {
-      public void run() {
-
-      }
-  };
 
   public static void main (String [] args){
     for (int k=1; k<=5; k++) {
@@ -82,7 +77,6 @@ public class Game extends JFrame implements KeyListener{
     displayGame();
     thread1.start();
     thread2.start();
-    thread3.start();
   }
 
   public void run(){
