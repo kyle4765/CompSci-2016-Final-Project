@@ -16,6 +16,9 @@ public class Game extends JFrame implements KeyListener{
   static int PanelXCoord = -300;
   static int PanelYCoord = -300;
 
+  static ImageIcon pix;
+  static int WalkOrRun = 0;
+
   public static void main (String [] args){
     displayGame();
   }
@@ -34,17 +37,17 @@ public class Game extends JFrame implements KeyListener{
 
     panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
     panel.setLayout(null);
-    panel.setBackground(Color.green);
+    panel.setBackground(new Color(141, 214, 116));
 
     JPanel character = new JPanel();
-    character.setBounds(185,185,30,30);
+    character.setBounds(175,175,50,50);
     character.setBackground(new Color(255,255,255,0));
 
       JLabel characterImage = new JLabel();
-      ImageIcon pix = new ImageIcon("4nX44_A7copy.png");
+      pix = new ImageIcon("Char-Walk-Right.png");
       characterImage.setIcon(pix);
       //characterImage.setText("BOI");
-      characterImage.setBounds(0,0,30,30);
+      characterImage.setBounds(0,0,50,50);
       characterImage.setVisible(true);
       characterImage.setVerticalTextPosition(JLabel.BOTTOM);
       characterImage.setHorizontalTextPosition(JLabel.CENTER);
@@ -66,28 +69,65 @@ public class Game extends JFrame implements KeyListener{
         if(e.getKeyCode() == 37 ){
          if( !(PanelXCoord+10>185)){
             PanelXCoord+=10;
-         }
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Left.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Left.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
         }
         //Right
         else if (e.getKeyCode() == 39 ){
          if( !(PanelXCoord-10<-985)){
             PanelXCoord-=10;
-         }
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Right.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Right.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
         }
         //Up
         else if (e.getKeyCode() == 38 ){
-         if( !(PanelYCoord+10>185)){
-            PanelYCoord+=10;
-         }
+           if( !(PanelYCoord+10>185)){
+              PanelYCoord+=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Right.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Right.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
         }
         //Down
         else if (e.getKeyCode() == 40 ){
-         if( !(PanelYCoord-10<-985)){
-            PanelYCoord-=10;
-         }
+           if( !(PanelYCoord-10<-985)){
+              PanelYCoord-=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Left.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Left.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
         }
 
-        System.out.println(PanelXCoord+", "+PanelYCoord);
+
+        //System.out.println(PanelXCoord+", "+PanelYCoord);
         panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
         panel.repaint();
         frame.repaint();
