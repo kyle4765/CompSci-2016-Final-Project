@@ -36,9 +36,46 @@ public class Game extends JFrame implements KeyListener{
   static JLabel time;
   static int timerRemaining = 59;
 
+  static JLabel enemy1 = makeEnemy();
+  static JLabel enemy2 = makeEnemy();
+
+  static int movementCount = 0;
+  static boolean moveDirection = true;
+
+  static int sleepTime = 40;
+
+  static Thread thread1 = new Thread() {
+      public void run() {
+        timerStart(timerRemaining);
+      }
+  };
+  static Thread thread2 = new Thread() {
+      public void run() {
+        moveCounter();
+      }
+  };
+  static Thread en1 = new Thread() {
+      public void run() {
+        moveEnemySide(enemy1);
+      }
+  };
+  static Thread en2 = new Thread() {
+      public void run() {
+        moveEnemySide(enemy2);
+      }
+  };
+
   public static void main (String [] args){
     displayGame();
-    timerStart(timerRemaining);
+    thread1.start();
+    thread2.start();
+    en1.start();
+    en2.start();
+  }
+
+  public void run(){
+    thread1.start();
+    thread2.start();
   }
 
   public void init()
@@ -77,6 +114,9 @@ public class Game extends JFrame implements KeyListener{
     time = new JLabel("Time:  "+timerRemaining);
     time.setBounds(0,-5,80,30);
     timer.add(time);
+
+    //enemy1 = makeEnemy();
+    //JLabel enemy2 = makeEnemy();
 
     frame.getContentPane().add(panel);
 
@@ -150,8 +190,6 @@ public class Game extends JFrame implements KeyListener{
           }
         }
 
-
-        //System.out.println(PanelXCoord+", "+PanelYCoord);
         panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
         panel.repaint();
         frame.repaint();
@@ -165,6 +203,9 @@ public class Game extends JFrame implements KeyListener{
     panel.setFocusable(true);
     panel.requestFocusInWindow();
 
+    panel.add(enemy1);
+    panel.add(enemy2);
+
     frame = new JFrame(".: Game :.");
     //frame.setResizable(false);
     frame.add(character);
@@ -177,17 +218,82 @@ public class Game extends JFrame implements KeyListener{
     frame.setSize(400,400);
   }
 
+  public static void moveCounter(){
+    try {
+      while (true) {
+        if(moveDirection == true){
+          movementCount++;
+        }
+        else{
+          movementCount--;
+        }
+
+        if(movementCount==200){
+          moveDirection = false;
+        }
+        else if(movementCount==0){
+          moveDirection = true;
+        }
+        Thread.sleep(sleepTime);
+      }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+  }
+
   public static void timerStart(int t){
     try {
-    while (true) {
-        System.out.println(timerRemaining);
+    while (timerRemaining>0) {
+        //System.out.println(timerRemaining);
         timerRemaining--;
-        time.setText("Time:  "+timerRemaining);
         Thread.sleep(1000);
+        time.setText("Time:  "+timerRemaining);
     }
     } catch (InterruptedException e) {
         e.printStackTrace();
     }
+  }
+
+  public static JLabel makeEnemy(){
+    JLabel enemy = new JLabel();
+    ImageIcon enemyPic = new ImageIcon("Enemy.png");
+    enemy.setIcon(enemyPic);
+    enemy.setBounds((int)(Math.random()*1200)-1,(int)(Math.random()*1200)-1,50,50);
+    enemy.setVisible(true);
+    enemy.setVerticalTextPosition(JLabel.BOTTOM);
+    enemy.setHorizontalTextPosition(JLabel.CENTER);
+    enemy.setBackground(new Color(0, 194, 255));
+    //panel.add(enemy);
+    return enemy;
+  }
+
+  public static void moveEnemySide(JLabel enemy){
+      try {
+        while (true) {
+          if(moveDirection == true){
+            if( !(enemy.getX()+1>1200) )
+            {
+              enemy.setBounds(enemy.getX()+1,enemy1.getY(),50,50);
+            }
+            else{}
+            Thread.sleep(sleepTime);
+          }
+          else {
+            if( !(enemy.getX()-1<0) )
+            {
+              enemy.setBounds(enemy.getX()-1,enemy1.getY(),50,50);
+            }
+            else{}
+            Thread.sleep(sleepTime);
+          }
+         }
+      } catch (InterruptedException e) {
+            e.printStackTrace();
+        };
+  }
+
+  public static void moveEnemyUp(){
+
   }
 
   @Override
