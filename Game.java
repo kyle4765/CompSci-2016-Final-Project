@@ -37,7 +37,7 @@ public class Game extends JFrame implements KeyListener{
   static JLabel time;
   static int timerRemaining = 59;
 
-  static ArrayList enemiesUpDown = new ArrayList();
+  static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
 
   static int movementCount = 0;
   static boolean moveDirection = true;
@@ -54,26 +54,40 @@ public class Game extends JFrame implements KeyListener{
         moveCounter();
       }
   };
+  static Thread enemyMoveSide = new Thread(){
+      public void run() {
+        for (int k=1; k<=5; k++) {
+          JLabel en = makeEnemy();
+          Rectangle ene = new Rectangle(50,50);
+          enemiesList.add(en);
+            Thread thread = new Thread() {
+              public void run() {
+                moveEnemySide(en, ene);
+              }
+          };
+          thread.start();
+        }
+      }
+  };
+  static Thread enemyMoveUp = new Thread(){
+      public void run() {
+        for (int k=1; k<=5; k++) {
+          JLabel en = makeEnemy();
+          Rectangle ene = new Rectangle(50,50);
+          enemiesList.add(en);
+            Thread thread = new Thread() {
+              public void run() {
+                moveEnemyUp(en, ene);
+              }
+          };
+          thread.start();
+        }
+      }
+  };
 
   public static void main (String [] args){
-    for (int k=1; k<=5; k++) {
-      JLabel en = makeEnemy();
-        Thread thread = new Thread() {
-          public void run() {
-            moveEnemySide(en);
-          }
-      };
-      thread.start();
-    }
-    for (int k=1; k<=5; k++) {
-      JLabel en = makeEnemy();
-        Thread thread = new Thread() {
-          public void run() {
-            moveEnemyUp(en);
-          }
-      };
-      thread.start();
-    }
+    enemyMoveUp.start();
+    enemyMoveSide.start();
     displayGame();
     thread1.start();
     thread2.start();
@@ -189,6 +203,25 @@ public class Game extends JFrame implements KeyListener{
             characterImage.setIcon(pix);
           }
         }
+
+        //System.out.println("Hit!");
+
+        for(JLabel enes:enemiesList)
+        {
+          int CharacterX = (int)characterImage.getLocationOnScreen().getX();
+          int CharacterY = (int)characterImage.getLocationOnScreen().getY();
+          int EnemyX = (int)enes.getLocationOnScreen().getX();
+          int EnemyY = (int)enes.getLocationOnScreen().getY();
+
+          System.out.println("Enemy: " + EnemyX + ", " +EnemyY);
+          System.out.println("Character: " + CharacterX + ", " + CharacterY);
+
+          if( (CharacterX > EnemyX-55 && CharacterX < EnemyX+55) && (CharacterY > EnemyY-55 && CharacterY < EnemyY+55) ){
+            System.out.println("Hit!");
+          }
+
+        }
+
         panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
         panel.repaint();
         frame.repaint();
@@ -262,7 +295,7 @@ public class Game extends JFrame implements KeyListener{
     return enemy;
   }
 
-  public static void moveEnemySide(JLabel enemy){
+  public static void moveEnemySide(JLabel enemy, Rectangle ene){
       try {
         while (true) {
           panel.repaint();
@@ -271,6 +304,7 @@ public class Game extends JFrame implements KeyListener{
             if( !(enemy.getX()+1>1150) )
             {
               enemy.setBounds(enemy.getX()+1,enemy.getY(),50,50);
+              ene.setLocation(enemy.getX(),enemy.getY());
             }
             else{}
             Thread.sleep(sleepTime);
@@ -279,6 +313,7 @@ public class Game extends JFrame implements KeyListener{
             if( !(enemy.getX()-1<50) )
             {
               enemy.setBounds(enemy.getX()-1,enemy.getY(),50,50);
+              ene.setLocation(enemy.getX(),enemy.getY());
             }
             else{}
             Thread.sleep(sleepTime);
@@ -289,7 +324,7 @@ public class Game extends JFrame implements KeyListener{
         };
   }
 
-  public static void moveEnemyUp(JLabel enemy){
+  public static void moveEnemyUp(JLabel enemy, Rectangle ene){
     try {
       while (true) {
         panel.repaint();
@@ -298,6 +333,7 @@ public class Game extends JFrame implements KeyListener{
           if( !(enemy.getY()+1>1150) )
           {
             enemy.setBounds(enemy.getX(),enemy.getY()+1,50,50);
+            ene.setLocation(enemy.getX(),enemy.getY());
           }
           else{}
           Thread.sleep(sleepTime);
@@ -306,6 +342,7 @@ public class Game extends JFrame implements KeyListener{
           if( !(enemy.getY()-1<50) )
           {
             enemy.setBounds(enemy.getX(),enemy.getY()-1,50,50);
+            ene.setLocation(enemy.getX(),enemy.getY());
           }
           else{}
           Thread.sleep(sleepTime);
