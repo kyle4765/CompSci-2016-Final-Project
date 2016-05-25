@@ -97,7 +97,7 @@ public class Game extends JFrame implements KeyListener{
         }
         //Up
         else if (e.getKeyCode() == 38 ){
-           if( !(PanelYCoord+10>185)){
+           if( !(PanelYCoord+10>175)){
               PanelYCoord+=10;
             if(WalkOrRun == 0){
               pix = new ImageIcon("Char-Run-Right.png");
@@ -112,7 +112,7 @@ public class Game extends JFrame implements KeyListener{
         }
         //Down
         else if (e.getKeyCode() == 40 ){
-           if( !(PanelYCoord-10<-985)){
+           if( !(PanelYCoord-10<-975)){
               PanelYCoord-=10;
             if(WalkOrRun == 0){
               pix = new ImageIcon("Char-Run-Left.png");
