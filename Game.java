@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
-public class Game extends JFrame implements KeyListener{
+public class Game extends JFrame {
 
   static JFrame frame = new JFrame(".: Game :.");
   static JPanel panel = new JPanel(){
@@ -33,14 +33,16 @@ public class Game extends JFrame implements KeyListener{
   static ImageIcon pix;
   static int WalkOrRun = 0;
   static JLabel time;
-  static int timerRemaining = 59;
   static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
   static ArrayList<JLabel> coinList = new ArrayList<JLabel>();
   static int movementCount = 0;
   static boolean moveDirection = true;
-  static int sleepTime = 40;
   static boolean gameIsPlaying = true;
   static int coinCount = 0;
+  static int sleepTime = 20;
+  static int enemyAmount = 10;
+  static int coinGenerate = 5;
+  static int timerRemaining = 59;
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -55,7 +57,7 @@ public class Game extends JFrame implements KeyListener{
   };
   static Thread enemyMoveSide = new Thread(){
       public void run() {
-        for (int k=1; k<=5; k++) {
+        for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
           enemiesList.add(en);
             Thread thread = new Thread() {
@@ -69,7 +71,7 @@ public class Game extends JFrame implements KeyListener{
   };
   static Thread enemyMoveUp = new Thread(){
       public void run() {
-        for (int k=1; k<=5; k++) {
+        for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
           enemiesList.add(en);
             Thread thread = new Thread() {
@@ -83,7 +85,7 @@ public class Game extends JFrame implements KeyListener{
   };
   static Thread makeCoins = new Thread(){
       public void run() {
-        for (int k=1; k<=5; k++) {
+        for (int k=1; k<=coinGenerate; k++) {
           JLabel co = makeCoin();
           coinList.add(co);
             Thread thread = new Thread() {
@@ -100,9 +102,6 @@ public class Game extends JFrame implements KeyListener{
         hitChecker();
       }
   };
-
-  /*DOES NOT WORK PROPERLY*/
-
   static Thread coinCheck = new Thread() {
       public void run() {
         coinChecker();
@@ -373,7 +372,7 @@ public class Game extends JFrame implements KeyListener{
   }
 
   public static void hitChecker() {
-    while(gameIsPlaying == true && enemiesList.size()>1 )
+    while(gameIsPlaying)
     {
       for(JLabel enes:enemiesList)
       {
@@ -387,7 +386,6 @@ public class Game extends JFrame implements KeyListener{
           ImageIcon explosion = new ImageIcon("Explosion.png");
           enes.setIcon(explosion);
           gameIsPlaying = false;
-          System.out.println(gameIsPlaying);
         }
       }
     }
@@ -415,44 +413,33 @@ public class Game extends JFrame implements KeyListener{
     }
   }
 
-
-  public static void motionCoin(JLabel enemy){
+  public static void motionCoin(JLabel coin){
     try {
       while (true) {
         panel.repaint();
         frame.repaint();
+
         if(moveDirection == true){
-          if( !(enemy.getY()+1>1150) )
+          if( !(coin.getY()+1>1150) )
           {
-            enemy.setBounds(enemy.getX(),enemy.getY()+1,50,50);
+            coin.setBounds(coin.getX(),coin.getY()+1,50,50);
           }
           else{}
           Thread.sleep(375);
         }
         else {
-          if( !(enemy.getY()-1<50) )
+          if( !(coin.getY()-1<50) )
           {
-            enemy.setBounds(enemy.getX(),enemy.getY()-1,50,50);
+            coin.setBounds(coin.getX(),coin.getY()-1,50,50);
           }
           else{}
           Thread.sleep(375);
         }
+
        }
     } catch (InterruptedException e) {
           e.printStackTrace();
       };
     }
 
-
-  @Override
-  public void keyTyped(KeyEvent e) {
-  }
-
-  @Override
-  public void keyPressed(KeyEvent e) {
-  }
-
-  @Override
-  public void keyReleased(KeyEvent e) {
-  }
 }
