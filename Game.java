@@ -29,15 +29,18 @@ public class Game extends JFrame implements KeyListener{
   static JPanel character = new JPanel();
   static int PanelXCoord = -300;
   static int PanelYCoord = -300;
+  static JLabel characterImage = new JLabel();
   static ImageIcon pix;
   static int WalkOrRun = 0;
   static JLabel time;
   static int timerRemaining = 59;
   static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
+  static ArrayList<JLabel> coinList = new ArrayList<JLabel>();
   static int movementCount = 0;
   static boolean moveDirection = true;
   static int sleepTime = 40;
   static boolean gameIsPlaying = true;
+  static int coinCount = 0;
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -54,11 +57,10 @@ public class Game extends JFrame implements KeyListener{
       public void run() {
         for (int k=1; k<=5; k++) {
           JLabel en = makeEnemy();
-          Rectangle ene = new Rectangle(50,50);
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
-                moveEnemySide(en, ene);
+                moveEnemySide(en);
               }
           };
           thread.start();
@@ -69,24 +71,53 @@ public class Game extends JFrame implements KeyListener{
       public void run() {
         for (int k=1; k<=5; k++) {
           JLabel en = makeEnemy();
-          Rectangle ene = new Rectangle(50,50);
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
-                moveEnemyUp(en, ene);
+                moveEnemyUp(en);
               }
           };
           thread.start();
         }
       }
   };
+  static Thread makeCoins = new Thread(){
+      public void run() {
+        for (int k=1; k<=5; k++) {
+          JLabel co = makeCoin();
+          coinList.add(co);
+            Thread thread = new Thread() {
+              public void run() {
+                motionCoin(co);
+              }
+          };
+          thread.start();
+        }
+      }
+  };
+  static Thread hitCheck = new Thread() {
+      public void run() {
+        hitChecker();
+      }
+  };
+
+  /*DOES NOT WORK PROPERLY*/
+
+  static Thread coinCheck = new Thread() {
+      public void run() {
+        coinChecker();
+      }
+  };
 
   public static void main (String [] args){
     enemyMoveUp.start();
     enemyMoveSide.start();
+    makeCoins.start();
     displayGame();
     thread1.start();
     thread2.start();
+    hitCheck.start();
+    coinCheck.start();
   }
 
   public void run(){
@@ -111,7 +142,6 @@ public class Game extends JFrame implements KeyListener{
     character.setBounds(175,175,50,50);
     character.setBackground(new Color(255,255,255,0));
 
-    JLabel characterImage = new JLabel();
     pix = new ImageIcon("Char-Walk-Right.png");
     characterImage.setIcon(pix);
     characterImage.setBounds(0,0,50,50);
@@ -200,28 +230,8 @@ public class Game extends JFrame implements KeyListener{
           }
         }
 
-        if(gameIsPlaying == true)
-        {
-          for(JLabel enes:enemiesList)
-          {
-            int CharacterX = (int)characterImage.getLocationOnScreen().getX();
-            int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-            int EnemyX = (int)enes.getLocationOnScreen().getX();
-            int EnemyY = (int)enes.getLocationOnScreen().getY();
 
-            //System.out.println("Enemy: " + EnemyX + ", " +EnemyY);
-            //System.out.println("Character: " + CharacterX + ", " + CharacterY);
 
-            if( (CharacterX > EnemyX-55 && CharacterX < EnemyX+55) && (CharacterY > EnemyY-55 && CharacterY < EnemyY+55) ){
-              System.out.println("Hit!");
-              ImageIcon explosion = new ImageIcon("Explosion.png");
-              enes.setIcon(explosion);
-              gameIsPlaying = false;
-              System.out.println(gameIsPlaying);
-            }
-
-          }
-        }
         panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
         panel.repaint();
         frame.repaint();
@@ -286,7 +296,7 @@ public class Game extends JFrame implements KeyListener{
     JLabel enemy = new JLabel();
     ImageIcon enemyPic = new ImageIcon("Enemy.png");
     enemy.setIcon(enemyPic);
-    enemy.setBounds((int)(Math.random()*1200)-1,(int)(Math.random()*1200)-1,50,50);
+    enemy.setBounds((int)(Math.random()*1100)-50,(int)(Math.random()*1100)-50,50,50);
     enemy.setVisible(true);
     enemy.setVerticalTextPosition(JLabel.BOTTOM);
     enemy.setHorizontalTextPosition(JLabel.CENTER);
@@ -295,7 +305,20 @@ public class Game extends JFrame implements KeyListener{
     return enemy;
   }
 
-  public static void moveEnemySide(JLabel enemy, Rectangle ene){
+  public static JLabel makeCoin(){
+    JLabel coin = new JLabel();
+    ImageIcon coinPic = new ImageIcon("Coin.png");
+    coin.setIcon(coinPic);
+    coin.setBounds((int)(Math.random()*1100)-50,(int)(Math.random()*1100)-50,50,50);
+    coin.setVisible(true);
+    coin.setVerticalTextPosition(JLabel.BOTTOM);
+    coin.setHorizontalTextPosition(JLabel.CENTER);
+    coin.setBackground(new Color(0, 194, 255));
+    panel.add(coin);
+    return coin;
+  }
+
+  public static void moveEnemySide(JLabel enemy){
       try {
         while (true) {
           panel.repaint();
@@ -304,7 +327,6 @@ public class Game extends JFrame implements KeyListener{
             if( !(enemy.getX()+1>1150) )
             {
               enemy.setBounds(enemy.getX()+1,enemy.getY(),50,50);
-              ene.setLocation(enemy.getX(),enemy.getY());
             }
             else{}
             Thread.sleep(sleepTime);
@@ -313,7 +335,6 @@ public class Game extends JFrame implements KeyListener{
             if( !(enemy.getX()-1<50) )
             {
               enemy.setBounds(enemy.getX()-1,enemy.getY(),50,50);
-              ene.setLocation(enemy.getX(),enemy.getY());
             }
             else{}
             Thread.sleep(sleepTime);
@@ -324,7 +345,7 @@ public class Game extends JFrame implements KeyListener{
         };
   }
 
-  public static void moveEnemyUp(JLabel enemy, Rectangle ene){
+  public static void moveEnemyUp(JLabel enemy){
     try {
       while (true) {
         panel.repaint();
@@ -333,7 +354,6 @@ public class Game extends JFrame implements KeyListener{
           if( !(enemy.getY()+1>1150) )
           {
             enemy.setBounds(enemy.getX(),enemy.getY()+1,50,50);
-            ene.setLocation(enemy.getX(),enemy.getY());
           }
           else{}
           Thread.sleep(sleepTime);
@@ -342,7 +362,6 @@ public class Game extends JFrame implements KeyListener{
           if( !(enemy.getY()-1<50) )
           {
             enemy.setBounds(enemy.getX(),enemy.getY()-1,50,50);
-            ene.setLocation(enemy.getX(),enemy.getY());
           }
           else{}
           Thread.sleep(sleepTime);
@@ -352,6 +371,78 @@ public class Game extends JFrame implements KeyListener{
           e.printStackTrace();
       };
   }
+
+  public static void hitChecker() {
+    while(gameIsPlaying == true && enemiesList.size()>1 )
+    {
+      for(JLabel enes:enemiesList)
+      {
+        int CharacterX = (int)characterImage.getLocationOnScreen().getX();
+        int CharacterY = (int)characterImage.getLocationOnScreen().getY();
+        int EnemyX = (int)enes.getLocationOnScreen().getX();
+        int EnemyY = (int)enes.getLocationOnScreen().getY();
+
+        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
+          System.out.println("Hit!");
+          ImageIcon explosion = new ImageIcon("Explosion.png");
+          enes.setIcon(explosion);
+          gameIsPlaying = false;
+          System.out.println(gameIsPlaying);
+        }
+      }
+    }
+  }
+
+  public static void coinChecker() {
+    while(gameIsPlaying == true && coinList.size()>1 )
+    {
+      for(JLabel cos:coinList)
+      {
+        int CharacterX = (int)characterImage.getLocationOnScreen().getX();
+        int CharacterY = (int)characterImage.getLocationOnScreen().getY();
+        int CoinX = (int)cos.getLocationOnScreen().getX();
+        int CoinY = (int)cos.getLocationOnScreen().getY();
+
+        if( (CharacterX > CoinX-40 && CharacterX < CoinX+40) && (CharacterY > CoinY-40 && CharacterY < CoinY+40) ){
+          System.out.println("Coin!");
+          ImageIcon blank = new ImageIcon("thisisnothing");
+          cos.setLocation(-50,-50);
+          cos.setIcon(blank);
+          coinCount++;
+          //coinList.remove(cos);
+        }
+      }
+    }
+  }
+
+
+  public static void motionCoin(JLabel enemy){
+    try {
+      while (true) {
+        panel.repaint();
+        frame.repaint();
+        if(moveDirection == true){
+          if( !(enemy.getY()+1>1150) )
+          {
+            enemy.setBounds(enemy.getX(),enemy.getY()+1,50,50);
+          }
+          else{}
+          Thread.sleep(375);
+        }
+        else {
+          if( !(enemy.getY()-1<50) )
+          {
+            enemy.setBounds(enemy.getX(),enemy.getY()-1,50,50);
+          }
+          else{}
+          Thread.sleep(375);
+        }
+       }
+    } catch (InterruptedException e) {
+          e.printStackTrace();
+      };
+    }
+
 
   @Override
   public void keyTyped(KeyEvent e) {
