@@ -27,23 +27,19 @@ public class Game extends JFrame implements KeyListener{
       };
   static JLabel label = new JLabel();
   static JPanel character = new JPanel();
-
   static int PanelXCoord = -300;
   static int PanelYCoord = -300;
-
   static ImageIcon pix;
   static int WalkOrRun = 0;
-
   static JLabel time;
   static int timerRemaining = 59;
-
   static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
-
   static int movementCount = 0;
   static boolean moveDirection = true;
-
   static int sleepTime = 40;
+  static boolean gameIsPlaying = true;
 
+  //Threads
   static Thread thread1 = new Thread() {
       public void run() {
         timerStart(timerRemaining);
@@ -204,24 +200,28 @@ public class Game extends JFrame implements KeyListener{
           }
         }
 
-        //System.out.println("Hit!");
-
-        for(JLabel enes:enemiesList)
+        if(gameIsPlaying == true)
         {
-          int CharacterX = (int)characterImage.getLocationOnScreen().getX();
-          int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-          int EnemyX = (int)enes.getLocationOnScreen().getX();
-          int EnemyY = (int)enes.getLocationOnScreen().getY();
+          for(JLabel enes:enemiesList)
+          {
+            int CharacterX = (int)characterImage.getLocationOnScreen().getX();
+            int CharacterY = (int)characterImage.getLocationOnScreen().getY();
+            int EnemyX = (int)enes.getLocationOnScreen().getX();
+            int EnemyY = (int)enes.getLocationOnScreen().getY();
 
-          System.out.println("Enemy: " + EnemyX + ", " +EnemyY);
-          System.out.println("Character: " + CharacterX + ", " + CharacterY);
+            //System.out.println("Enemy: " + EnemyX + ", " +EnemyY);
+            //System.out.println("Character: " + CharacterX + ", " + CharacterY);
 
-          if( (CharacterX > EnemyX-55 && CharacterX < EnemyX+55) && (CharacterY > EnemyY-55 && CharacterY < EnemyY+55) ){
-            System.out.println("Hit!");
+            if( (CharacterX > EnemyX-55 && CharacterX < EnemyX+55) && (CharacterY > EnemyY-55 && CharacterY < EnemyY+55) ){
+              System.out.println("Hit!");
+              ImageIcon explosion = new ImageIcon("Explosion.png");
+              enes.setIcon(explosion);
+              gameIsPlaying = false;
+              System.out.println(gameIsPlaying);
+            }
+
           }
-
         }
-
         panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
         panel.repaint();
         frame.repaint();
