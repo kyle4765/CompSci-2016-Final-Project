@@ -311,7 +311,14 @@ public class Game extends JFrame {
     JLabel enemy = new JLabel();
     ImageIcon enemyPic = new ImageIcon("Enemy.png");
     enemy.setIcon(enemyPic);
-    enemy.setBounds((int)(Math.random()*1100)-50,(int)(Math.random()*1100)-50,50,50);
+    int x = 600;
+    int y = 600;
+    while (Math.abs(600-x) < 150 || Math.abs(600-y) < 150)
+    {
+    	x = (int)(Math.random()*1100) - 50;
+    	y = (int)(Math.random()*1100) - 50;
+    }
+    enemy.setBounds(x,y,50,50);
     enemy.setVisible(true);
     enemy.setVerticalTextPosition(JLabel.BOTTOM);
     enemy.setHorizontalTextPosition(JLabel.CENTER);
