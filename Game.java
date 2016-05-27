@@ -420,11 +420,8 @@ public class Game extends JFrame {
         int EnemyY = (int)enes.getLocationOnScreen().getY();
 
         if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
-          ImageIcon blank = new ImageIcon("thisisnothing");
-          healthList.get(ArmorCount-1).setIcon(blank);
-          ArmorCount--;
+          hit();
           enes.setIcon(explosion);
-          System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
         }
         if(ArmorCount==0)
         {
@@ -433,6 +430,13 @@ public class Game extends JFrame {
         }
       }
     }
+  }
+
+  public static void hit() {
+    ImageIcon blank = new ImageIcon("thisisnothing");
+    healthList.get(ArmorCount-1).setIcon(blank);
+    ArmorCount--;
+    System.out.println("Hit -- " + ArmorCount + " Lives Remaining");
   }
 
   public static void coinChecker() {
