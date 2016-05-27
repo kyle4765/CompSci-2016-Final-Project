@@ -40,6 +40,7 @@ public class Game extends JFrame {
   static int WalkOrRun = 0;
   static JLabel time;
   static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
+  static ArrayList<Boolean> explodeList = new ArrayList<Boolean>();
   static ArrayList<JLabel> coinList = new ArrayList<JLabel>();
   static int movementCount = 0;
   static boolean moveDirection = true;
@@ -78,6 +79,8 @@ public class Game extends JFrame {
       public void run() {
         for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
+          boolean hasExploded = false;
+          explodeList.add(Boolean.valueOf(hasExploded));
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
@@ -92,6 +95,9 @@ public class Game extends JFrame {
       public void run() {
         for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
+          boolean hasExploded = false;
+          explodeList.add(Boolean.valueOf(hasExploded));
+
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
@@ -323,6 +329,10 @@ public class Game extends JFrame {
 
   public static JLabel makeEnemy(){
     JLabel enemy = new JLabel();
+    
+    
+   // boolean hasExploded = false;
+    
     ImageIcon enemyPic = new ImageIcon("Enemy.png");
     enemy.setIcon(enemyPic);
     int x = 600;
@@ -419,11 +429,17 @@ public class Game extends JFrame {
         int EnemyX = (int)enes.getLocationOnScreen().getX();
         int EnemyY = (int)enes.getLocationOnScreen().getY();
 
-        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
+        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
+          (explodeList.get(k)).valueOf(true);
           ImageIcon blank = new ImageIcon("thisisnothing");
           healthList.get(ArmorCount-1).setIcon(blank);
           ArmorCount--;
           enes.setIcon(explosion);
+          try{
+            Thread.sleep(200);
+          } catch (InterruptedException e) {
+          e.printStackTrace();
+          };
           System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
         }
         if(ArmorCount==0)
