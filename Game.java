@@ -51,10 +51,18 @@ public class Game extends JFrame {
   static int timerRemaining = 59;
   static ImageIcon explosion = new ImageIcon("Explosion.png");
   static ImageIcon healthIcon = new ImageIcon("Armor.png");
-  static JLabel health1 = new JLabel(healthIcon);
-  static JLabel health2 = new JLabel(healthIcon);
-  static JLabel health3 = new JLabel(healthIcon);
+  static JPanel healthPanel = new JPanel();
 
+  static int ArmorCount = 3;
+  static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
+/*
+  static JLabel health1 = new JLabel(healthIcon);
+  healthList.add(health1);
+  static JLabel health2 = new JLabel(healthIcon);
+  healthList.add(health2);
+  static JLabel health3 = new JLabel(healthIcon);
+  healthList.add(health3);
+  */
   //Threads
   static Thread thread1 = new Thread() {
       public void run() {
@@ -120,6 +128,13 @@ public class Game extends JFrame {
   };
 
   public static void main (String [] args){
+    for(int k=0; k<ArmorCount; k++)
+    {
+      JLabel health1 = new JLabel(healthIcon);
+      healthList.add(health1);
+      health1.setBounds(0,0,30,30);
+      healthPanel.add(health1);
+    }
     enemyMoveUp.start();
     enemyMoveSide.start();
     makeCoins.start();
@@ -161,17 +176,16 @@ public class Game extends JFrame {
     time.setBounds(0,-5,80,30);
     timer.add(time);
 
-    JPanel healthPanel = new JPanel();
     healthPanel.setBounds(210,-5,110,30);
     healthPanel.setBackground(new Color(255,255,255,0));
-
+    /*
     health1.setBounds(0,0,30,30);
     healthPanel.add(health1);
-    health2.setBounds(0,-5,30,30);
+    health2.setBounds(0,0,30,30);
     healthPanel.add(health2);
-    health3.setBounds(0,-5,30,30);
+    health3.setBounds(0,0,30,30);
     healthPanel.add(health3);
-
+    */
     frame.getContentPane().add(panel);
 
     panel.addKeyListener(new KeyListener() {
@@ -406,8 +420,15 @@ public class Game extends JFrame {
         int EnemyY = (int)enes.getLocationOnScreen().getY();
 
         if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
-          System.out.println("Hit!\tGame Over");
+          ImageIcon blank = new ImageIcon("thisisnothing");
+          healthList.get(ArmorCount-1).setIcon(blank);
+          ArmorCount--;
           enes.setIcon(explosion);
+          System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
+        }
+        if(ArmorCount==0)
+        {
+          System.out.println("Hit!\tGame Over");
           gameIsPlaying = false;
         }
       }
