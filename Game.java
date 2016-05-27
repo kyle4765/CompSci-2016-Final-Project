@@ -9,6 +9,12 @@ import java.awt.event.KeyEvent;
 
 public class Game extends JFrame {
 
+  public void init()
+  {
+    panel.setFocusable(true);
+    panel.requestFocusInWindow();
+  }
+
   static JFrame frame = new JFrame(".: Game :.");
   static JPanel panel = new JPanel(){
                  @Override
@@ -43,6 +49,7 @@ public class Game extends JFrame {
   static int enemyAmount = 10;
   static int coinGenerate = 5;
   static int timerRemaining = 59;
+  static ImageIcon explosion = new ImageIcon("Explosion.png");
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -120,12 +127,6 @@ public class Game extends JFrame {
   }
 
   public void run(){
-  }
-
-  public void init()
-  {
-    panel.setFocusable(true);
-    panel.requestFocusInWindow();
   }
 
   public static void displayGame()
@@ -372,18 +373,18 @@ public class Game extends JFrame {
   }
 
   public static void hitChecker() {
-    while(gameIsPlaying)
+    while(gameIsPlaying == true && enemiesList.size()>1)
     {
-      for(JLabel enes:enemiesList)
+      for(int k=0; k<enemiesList.size(); k++)
       {
+        JLabel enes = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
         int CharacterY = (int)characterImage.getLocationOnScreen().getY();
         int EnemyX = (int)enes.getLocationOnScreen().getX();
         int EnemyY = (int)enes.getLocationOnScreen().getY();
 
         if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
-          System.out.println("Hit!");
-          ImageIcon explosion = new ImageIcon("Explosion.png");
+          System.out.println("Hit!\tGame Over");
           enes.setIcon(explosion);
           gameIsPlaying = false;
         }
@@ -392,10 +393,11 @@ public class Game extends JFrame {
   }
 
   public static void coinChecker() {
-    while(gameIsPlaying == true && coinList.size()>1 )
+    while(gameIsPlaying == true && coinList.size()>1)
     {
-      for(JLabel cos:coinList)
+      for(int k=0; k<coinList.size(); k++)
       {
+        JLabel cos = coinList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
         int CharacterY = (int)characterImage.getLocationOnScreen().getY();
         int CoinX = (int)cos.getLocationOnScreen().getX();
@@ -405,12 +407,20 @@ public class Game extends JFrame {
           System.out.println("Coin!");
           ImageIcon blank = new ImageIcon("thisisnothing");
           cos.setLocation(-50,-50);
-          cos.setIcon(blank);
+          //cos.setIcon(blank);
           coinCount++;
           //coinList.remove(cos);
         }
+
+        if(coinCount == coinGenerate)
+        {
+          gameIsPlaying=false;
+          System.out.println("You Win!");
+        }
+
       }
     }
+
   }
 
   public static void motionCoin(JLabel coin){
