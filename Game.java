@@ -50,6 +50,10 @@ public class Game extends JFrame {
   static int coinGenerate = 5;
   static int timerRemaining = 59;
   static ImageIcon explosion = new ImageIcon("Explosion.png");
+  static ImageIcon healthIcon = new ImageIcon("Armor.png");
+  static JLabel health1 = new JLabel(healthIcon);
+  static JLabel health2 = new JLabel(healthIcon);
+  static JLabel health3 = new JLabel(healthIcon);
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -126,11 +130,9 @@ public class Game extends JFrame {
     coinCheck.start();
   }
 
-  public void run(){
-  }
+  public void run(){}
 
-  public static void displayGame()
-  {
+  public static void displayGame(){
     JPanel water = new JPanel();
     water.setBounds(-450,-450,1300,1300);
     water.setBackground(Color.blue);
@@ -153,10 +155,22 @@ public class Game extends JFrame {
 
     JPanel timer = new JPanel();
     timer.setBounds(320,0,80,30);
+    timer.setBackground(new Color(255,255,255,0));
 
     time = new JLabel("Time:  "+timerRemaining);
     time.setBounds(0,-5,80,30);
     timer.add(time);
+
+    JPanel healthPanel = new JPanel();
+    healthPanel.setBounds(210,-5,110,30);
+    healthPanel.setBackground(new Color(255,255,255,0));
+
+    health1.setBounds(0,0,30,30);
+    healthPanel.add(health1);
+    health2.setBounds(0,-5,30,30);
+    healthPanel.add(health2);
+    health3.setBounds(0,-5,30,30);
+    healthPanel.add(health3);
 
     frame.getContentPane().add(panel);
 
@@ -249,6 +263,7 @@ public class Game extends JFrame {
     //frame.setResizable(false);
     frame.add(character);
     frame.add(timer);
+    frame.add(healthPanel);
     frame.add(panel);
     frame.add(water);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
