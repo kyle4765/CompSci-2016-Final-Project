@@ -40,6 +40,7 @@ public class Game extends JFrame {
   static int WalkOrRun = 0;
   static JLabel time;
   static ArrayList<JLabel> enemiesList = new ArrayList<JLabel>();
+  static ArrayList<Boolean> explodeList = new ArrayList<Boolean>();
   static ArrayList<JLabel> coinList = new ArrayList<JLabel>();
   static int movementCount = 0;
   static boolean moveDirection = true;
@@ -55,14 +56,7 @@ public class Game extends JFrame {
 
   static int ArmorCount = 3;
   static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
-/*
-  static JLabel health1 = new JLabel(healthIcon);
-  healthList.add(health1);
-  static JLabel health2 = new JLabel(healthIcon);
-  healthList.add(health2);
-  static JLabel health3 = new JLabel(healthIcon);
-  healthList.add(health3);
-  */
+
   //Threads
   static Thread thread1 = new Thread() {
       public void run() {
@@ -78,6 +72,8 @@ public class Game extends JFrame {
       public void run() {
         for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
+          boolean hasExploded = false;
+          explodeList.add(Boolean.valueOf(hasExploded));
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
@@ -92,6 +88,9 @@ public class Game extends JFrame {
       public void run() {
         for (int k=1; k<=enemyAmount; k++) {
           JLabel en = makeEnemy();
+          boolean hasExploded = false;
+          explodeList.add(Boolean.valueOf(hasExploded));
+
           enemiesList.add(en);
             Thread thread = new Thread() {
               public void run() {
@@ -178,14 +177,7 @@ public class Game extends JFrame {
 
     healthPanel.setBounds(210,-5,110,30);
     healthPanel.setBackground(new Color(255,255,255,0));
-    /*
-    health1.setBounds(0,0,30,30);
-    healthPanel.add(health1);
-    health2.setBounds(0,0,30,30);
-    healthPanel.add(health2);
-    health3.setBounds(0,0,30,30);
-    healthPanel.add(health3);
-    */
+
     frame.getContentPane().add(panel);
 
     panel.addKeyListener(new KeyListener() {
@@ -323,14 +315,15 @@ public class Game extends JFrame {
 
   public static JLabel makeEnemy(){
     JLabel enemy = new JLabel();
+
     ImageIcon enemyPic = new ImageIcon("Enemy.png");
     enemy.setIcon(enemyPic);
     int x = 600;
     int y = 600;
     while (Math.abs(600-x) < 150 || Math.abs(600-y) < 150)
     {
-    	x = (int)(Math.random()*1100) - 50;
-    	y = (int)(Math.random()*1100) - 50;
+    	x = (int)(Math.random()*1100) + 50;
+    	y = (int)(Math.random()*1100) + 50;
     }
     enemy.setBounds(x,y,50,50);
     enemy.setVisible(true);
@@ -345,7 +338,14 @@ public class Game extends JFrame {
     JLabel coin = new JLabel();
     ImageIcon coinPic = new ImageIcon("Coin.png");
     coin.setIcon(coinPic);
-    coin.setBounds((int)(Math.random()*1100)-50,(int)(Math.random()*1100)-50,50,50);
+    int x = 600;
+    int y = 600;
+    while (Math.abs(600-x) < 150 || Math.abs(600-y) < 150)
+    {
+      x = (int)(Math.random()*1100) + 50;
+      y = (int)(Math.random()*1100) + 50;
+    }
+    coin.setBounds(x,y,50,50);
     coin.setVisible(true);
     coin.setVerticalTextPosition(JLabel.BOTTOM);
     coin.setHorizontalTextPosition(JLabel.CENTER);
@@ -416,17 +416,28 @@ public class Game extends JFrame {
         JLabel enes = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
         int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-        int EnemyX = (int)enes.getLocationOnScreen().getX();
-        int EnemyY = (int)enes.getLocationOnScreen().getY();
+        int EnemyX = (int)enemiesList.get(k).getLocationOnScreen().getX();
+        int EnemyY = (int)enemiesList.get(k).getLocationOnScreen().getY();
 
-        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) ){
-          hit();
+        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
+          explodeList.set(k, new Boolean(true));
+          ImageIcon blank = new ImageIcon("thisisnothing");
+          healthList.get(ArmorCount-1).setIcon(blank);
+          ArmorCount--;
           enes.setIcon(explosion);
+            try{
+              Thread.sleep(200);
+            } catch (InterruptedException e) {
+            e.printStackTrace();
+            };
+          System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
         }
         if(ArmorCount==0)
         {
           System.out.println("Hit!\tGame Over");
           gameIsPlaying = false;
+          thread1.stop();
+          break;
         }
       }
     }
