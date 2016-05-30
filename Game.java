@@ -416,8 +416,8 @@ public class Game extends JFrame {
         JLabel enes = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
         int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-        int EnemyX = (int)enemiesList.get(k).getLocationOnScreen().getX();
-        int EnemyY = (int)enemiesList.get(k).getLocationOnScreen().getY();
+        int EnemyX = (int)enes.getLocationOnScreen().getX();
+        int EnemyY = (int)enes.getLocationOnScreen().getY();
 
         if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
           explodeList.set(k, new Boolean(true));
@@ -468,6 +468,7 @@ public class Game extends JFrame {
           //cos.setIcon(blank);
           coinCount++;
           //coinList.remove(cos);
+          System.out.println( (coinGenerate-coinCount)+" Coins Remaing");
         }
 
         if(coinCount == coinGenerate)
