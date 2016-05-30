@@ -53,6 +53,8 @@ public class Game extends JFrame {
   static ImageIcon explosion = new ImageIcon("Explosion.png");
   static ImageIcon healthIcon = new ImageIcon("Armor.png");
   static JPanel healthPanel = new JPanel();
+  static boolean coinDirection = true;
+  static int coinMove = 0;
 
   static int ArmorCount = 3;
   static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
@@ -66,6 +68,11 @@ public class Game extends JFrame {
   static Thread thread2 = new Thread() {
       public void run() {
         moveCounter();
+      }
+  };
+  static Thread thread3 = new Thread() {
+      public void run() {
+        moveCoinCounter();
       }
   };
   static Thread enemyMoveSide = new Thread(){
@@ -140,6 +147,7 @@ public class Game extends JFrame {
     displayGame();
     thread1.start();
     thread2.start();
+    thread3.start();
     hitCheck.start();
     coinCheck.start();
   }
@@ -301,6 +309,29 @@ public class Game extends JFrame {
     }
   }
 
+  public static void moveCoinCounter(){
+    try {
+      while (true) {
+        if(coinDirection == true){
+          coinMove++;
+        }
+        else{
+          coinMove--;
+        }
+
+        if(coinMove==10){
+          coinDirection = false;
+        }
+        else if(coinMove==0){
+          coinDirection = true;
+        }
+        Thread.sleep(sleepTime);
+      }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+  }
+
   public static void timerStart(int t){
     try {
     while (timerRemaining>0) {
@@ -411,7 +442,7 @@ public class Game extends JFrame {
   public static void hitChecker() {
     while(gameIsPlaying == true && enemiesList.size()>1)
     {
-      for(int k=0; k<enemiesList.size(); k++)
+      for(int k=0; k<enemiesList.size()-2; k++)
       {
         JLabel enes = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
@@ -483,32 +514,30 @@ public class Game extends JFrame {
   }
 
   public static void motionCoin(JLabel coin){
+
     try {
       while (true) {
         panel.repaint();
         frame.repaint();
-
-        if(moveDirection == true){
+        if(coinDirection == true){
           if( !(coin.getY()+1>1150) )
           {
             coin.setBounds(coin.getX(),coin.getY()+1,50,50);
           }
-          else{}
-          Thread.sleep(375);
+          Thread.sleep(150);
         }
         else {
           if( !(coin.getY()-1<50) )
           {
             coin.setBounds(coin.getX(),coin.getY()-1,50,50);
           }
-          else{}
-          Thread.sleep(375);
+          Thread.sleep(150);
         }
-
        }
     } catch (InterruptedException e) {
           e.printStackTrace();
       };
-    }
+
+  }
 
 }
