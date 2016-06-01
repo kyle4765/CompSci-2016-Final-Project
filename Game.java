@@ -9,8 +9,7 @@ import java.awt.event.KeyEvent;
 
 public class Game extends JFrame {
 
-  public void init()
-  {
+  public void init() {
     panel.setFocusable(true);
     panel.requestFocusInWindow();
   }
@@ -55,6 +54,7 @@ public class Game extends JFrame {
   static JPanel healthPanel = new JPanel();
   static boolean coinDirection = true;
   static int coinMove = 0;
+  static JPanel timer = new JPanel();
 
   static int ArmorCount = 3;
   static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
@@ -175,7 +175,6 @@ public class Game extends JFrame {
 
     character.add(characterImage);
 
-    JPanel timer = new JPanel();
     timer.setBounds(320,0,80,30);
     timer.setBackground(new Color(255,255,255,0));
 
