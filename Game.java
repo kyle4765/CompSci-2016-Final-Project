@@ -55,24 +55,30 @@ public class Game extends JFrame {
   static boolean coinDirection = true;
   static int coinMove = 0;
   static JPanel timer = new JPanel();
-
   static int ArmorCount = 3;
   static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
+  static JPanel gamePlayInfo = new JPanel();
 
   //Threads
   static Thread thread1 = new Thread() {
       public void run() {
-        timerStart(timerRemaining);
+        while (!Thread.currentThread().isInterrupted()) {
+          timerStart(timerRemaining);
+        }
       }
   };
   static Thread thread2 = new Thread() {
       public void run() {
-        moveCounter();
+        while (!Thread.currentThread().isInterrupted()) {
+          moveCounter();
+        }
       }
   };
   static Thread thread3 = new Thread() {
       public void run() {
-        moveCoinCounter();
+        while (!Thread.currentThread().isInterrupted()) {
+          moveCoinCounter();
+        }
       }
   };
   static Thread enemyMoveSide = new Thread(){
@@ -82,9 +88,10 @@ public class Game extends JFrame {
           boolean hasExploded = false;
           explodeList.add(Boolean.valueOf(hasExploded));
           enemiesList.add(en);
+          int num = k;
             Thread thread = new Thread() {
               public void run() {
-                moveEnemySide(en);
+                moveEnemySide(en, num);
               }
           };
           thread.start();
@@ -124,12 +131,23 @@ public class Game extends JFrame {
   };
   static Thread hitCheck = new Thread() {
       public void run() {
-        hitChecker();
+        while (!Thread.currentThread().isInterrupted()) {
+          hitChecker();
+        }
       }
   };
   static Thread coinCheck = new Thread() {
       public void run() {
-        coinChecker();
+        while (!Thread.currentThread().isInterrupted()) {
+          coinChecker();
+        }
+      }
+  };
+  static Thread stopFlashing = new Thread() {
+      public void run() {
+        while(true){
+          frame.repaint();
+        }
       }
   };
 
@@ -141,15 +159,21 @@ public class Game extends JFrame {
       health1.setBounds(0,0,30,30);
       healthPanel.add(health1);
     }
+
     enemyMoveUp.start();
     enemyMoveSide.start();
     makeCoins.start();
+
     displayGame();
+
     thread1.start();
     thread2.start();
     thread3.start();
     hitCheck.start();
     coinCheck.start();
+    stopFlashing.start();
+
+    //gameOver();
   }
 
   public void run(){}
@@ -285,9 +309,63 @@ public class Game extends JFrame {
     frame.setSize(400,400);
   }
 
+  public static void gameOver(){
+    try{
+      thread1.sleep(100);
+      thread2.sleep(100);
+      thread3.sleep(100);
+    } catch (InterruptedException e) {
+          e.printStackTrace();
+    };
+    enemyMoveUp.interrupt();
+    enemyMoveSide.interrupt();
+    makeCoins.interrupt();
+    thread1.interrupt();
+    thread2.interrupt();
+    thread3.interrupt();
+    hitCheck.interrupt();
+    coinCheck.interrupt();
+
+    timer.setVisible(false);
+    healthPanel.setVisible(false);
+    panel.setVisible(false);
+    character.setVisible(false);
+
+    gamePlayInfo.setBounds(0,0,400,400);
+    gamePlayInfo.setLayout(null);
+    gamePlayInfo.setBackground(new Color(254, 174, 53));
+
+    JLabel WinLose = new JLabel();
+      if(coinCount==coinGenerate){
+        WinLose.setText("You Win!");
+      }
+      else{
+        WinLose.setText("You Lose");
+      }
+    WinLose.setFont(new Font("BlockArt", Font.PLAIN, 40));
+    WinLose.setBounds(90,75,200,50);
+
+    JLabel CoinData = new JLabel();
+      CoinData.setText("Coins:              \t"+coinCount);
+    JLabel EnemiesHit = new JLabel();
+    EnemiesHit.setText("Enemies Hit:     \t"+(3-ArmorCount));
+
+    CoinData.setFont(new Font("BlockArt", Font.PLAIN, 20));
+    EnemiesHit.setFont(new Font("BlockArt", Font.PLAIN, 20));
+
+    CoinData.setBounds(90,125,300,50);
+    EnemiesHit.setBounds(90,160,300,50);
+
+    gamePlayInfo.add(CoinData);
+    gamePlayInfo.add(EnemiesHit);
+    gamePlayInfo.add(WinLose);
+
+    frame.add(gamePlayInfo);
+  }
+
   public static void moveCounter(){
     try {
-      while (true) {
+      while (gameIsPlaying==true) {
         if(moveDirection == true){
           movementCount++;
         }
@@ -305,12 +383,13 @@ public class Game extends JFrame {
       }
     } catch (InterruptedException e) {
         e.printStackTrace();
+        thread2.currentThread().interrupt();
     }
   }
 
   public static void moveCoinCounter(){
     try {
-      while (true) {
+      while (gameIsPlaying==true) {
         if(coinDirection == true){
           coinMove++;
         }
@@ -328,18 +407,24 @@ public class Game extends JFrame {
       }
     } catch (InterruptedException e) {
         e.printStackTrace();
+        thread3.currentThread().interrupt();
     }
   }
 
   public static void timerStart(int t){
     try {
-    while (timerRemaining>0) {
-        timerRemaining--;
-        Thread.sleep(1000);
-        time.setText("Time:  "+timerRemaining);
-    }
+      while (timerRemaining>0 && gameIsPlaying==true) {
+          timerRemaining--;
+          Thread.sleep(1000);
+          time.setText("Time:  "+timerRemaining);
+      }
+      if(timerRemaining==0)
+      {
+        gameOver();
+      }
     } catch (InterruptedException e) {
         e.printStackTrace();
+        thread1.currentThread().interrupt();
     }
   }
 
@@ -384,11 +469,11 @@ public class Game extends JFrame {
     return coin;
   }
 
-  public static void moveEnemySide(JLabel enemy){
+  public static void moveEnemySide(JLabel enemy, int k){
       try {
         while (true) {
-          panel.repaint();
-          frame.repaint();
+        panel.repaint();
+        frame.repaint();
           if(moveDirection == true){
             if( !(enemy.getX()+1>1150) )
             {
@@ -414,8 +499,8 @@ public class Game extends JFrame {
   public static void moveEnemyUp(JLabel enemy){
     try {
       while (true) {
-        panel.repaint();
-        frame.repaint();
+      panel.repaint();
+      frame.repaint();
         if(moveDirection == true){
           if( !(enemy.getY()+1>1150) )
           {
@@ -454,6 +539,7 @@ public class Game extends JFrame {
           ImageIcon blank = new ImageIcon("thisisnothing");
           healthList.get(ArmorCount-1).setIcon(blank);
           ArmorCount--;
+
           enes.setIcon(explosion);
             try{
               Thread.sleep(200);
@@ -461,12 +547,21 @@ public class Game extends JFrame {
             e.printStackTrace();
             };
           System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
+          MakeSound.playSound("myLeg.wav");
         }
         if(ArmorCount==0)
         {
           System.out.println("Hit!\tGame Over");
+          enemyMoveUp.interrupt();
+          enemyMoveSide.interrupt();
+          makeCoins.interrupt();
+          thread1.interrupt();
+          thread2.interrupt();
+          thread3.interrupt();
+          hitCheck.interrupt();
+          coinCheck.interrupt();
           gameIsPlaying = false;
-          thread1.stop();
+          gameOver();
           break;
         }
       }
@@ -492,7 +587,6 @@ public class Game extends JFrame {
         int CoinY = (int)cos.getLocationOnScreen().getY();
 
         if( (CharacterX > CoinX-40 && CharacterX < CoinX+40) && (CharacterY > CoinY-40 && CharacterY < CoinY+40) ){
-          System.out.println("Coin!");
           ImageIcon blank = new ImageIcon("thisisnothing");
           cos.setLocation(-50,-50);
           //cos.setIcon(blank);
@@ -505,6 +599,7 @@ public class Game extends JFrame {
         {
           gameIsPlaying=false;
           System.out.println("You Win!");
+          gameOver();
         }
 
       }
