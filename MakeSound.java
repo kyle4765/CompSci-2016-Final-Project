@@ -70,4 +70,21 @@ public class MakeSound {
         sourceLine.drain();
         sourceLine.close();
     }
+    
+    public static void playRandomSound(String group)
+    {
+      String[] options = new String[]{};
+      String sound = "";
+      switch (group)
+      {
+      case "hit"   : options = new String[]{"Wilhelm.wav", "myLeg.wav"}; break;
+      case "coin"  : options = new String[]{}; break;
+      case "win"   : options = new String[]{"FiestaTrio.wav"}; break;
+      case "start" : options = new String[]{}; break;
+      case "lose"  : options = new String[]{}; break;
+      }
+      Random r = new Random();
+      int index = r.nextInt(options.length);
+      playSound(options[index]);
+    }
 }
