@@ -183,8 +183,9 @@ public class Game extends JFrame {
   public void run(){}
 
   public static void displayGame(){
-    water.setBounds(-450,-450,1300,1300);
-    water.setBackground(Color.blue);
+    water.setBounds(-200,-200,1500,1500);
+    water.setBackground(new Color(0,0,255));
+    water.setVisible(true);
 
     panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
     panel.setLayout(null);
@@ -303,12 +304,7 @@ public class Game extends JFrame {
     gamePlayInfo.setLayout(null);
     gamePlayInfo.setBackground(new Color(254, 174, 53));
 
-      if(coinCount==coinGenerate){
-        WinLose.setText("You Win!");
-      }
-      else{
-        WinLose.setText("You Lose");
-      }
+
     WinLose.setFont(new Font("BlockArt", Font.PLAIN, 40));
     WinLose.setBounds(90,75,200,50);
 
@@ -344,8 +340,15 @@ public class Game extends JFrame {
     panel.setVisible(false);
     water.setVisible(false);
 
+    if(coinCount==coinGenerate){
+      WinLose.setText("You Win!");
+    }
+    else{
+      WinLose.setText("You Lose");
+    }
+
     CoinData.setText("Coins...................\t"+coinCount);
-  EnemiesHit.setText("Enemies Hit:........\t"+(3-ArmorCount));
+    EnemiesHit.setText("Enemies Hit:........\t"+(3-ArmorCount));
 
     gamePlayInfo.setVisible(true);
   }
