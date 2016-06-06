@@ -58,18 +58,22 @@ public class Game extends JFrame {
   static int ArmorCount = 3;
   static ArrayList<JLabel> healthList = new ArrayList<JLabel>();
   static JPanel gamePlayInfo = new JPanel();
+  static JLabel WinLose = new JLabel();
+  static JLabel CoinData = new JLabel();
+  static JLabel EnemiesHit = new JLabel();
+  static JPanel water = new JPanel();
 
   //Threads
   static Thread thread1 = new Thread() {
       public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && gameIsPlaying==true) {
           timerStart(timerRemaining);
         }
       }
   };
   static Thread thread2 = new Thread() {
       public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && gameIsPlaying==true) {
           moveCounter();
         }
       }
@@ -131,14 +135,14 @@ public class Game extends JFrame {
   };
   static Thread hitCheck = new Thread() {
       public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && gameIsPlaying==true) {
           hitChecker();
         }
       }
   };
   static Thread coinCheck = new Thread() {
       public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted() && gameIsPlaying==true) {
           coinChecker();
         }
       }
@@ -151,7 +155,7 @@ public class Game extends JFrame {
       }
   };
 
-  public static void main (String [] args){
+  public static void main (String [] args) throws InterruptedException{
     for(int k=0; k<ArmorCount; k++)
     {
       JLabel health1 = new JLabel(healthIcon);
@@ -179,7 +183,6 @@ public class Game extends JFrame {
   public void run(){}
 
   public static void displayGame(){
-    JPanel water = new JPanel();
     water.setBounds(-450,-450,1300,1300);
     water.setBackground(Color.blue);
 
@@ -296,46 +299,10 @@ public class Game extends JFrame {
     panel.setFocusable(true);
     panel.requestFocusInWindow();
 
-    frame = new JFrame(".: Game :.");
-    //frame.setResizable(false);
-    frame.add(character);
-    frame.add(timer);
-    frame.add(healthPanel);
-    frame.add(panel);
-    frame.add(water);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.pack();
-    frame.setVisible(true);
-    frame.setSize(400,400);
-  }
-
-  public static void gameOver(){
-    try{
-      thread1.sleep(100);
-      thread2.sleep(100);
-      thread3.sleep(100);
-    } catch (InterruptedException e) {
-          e.printStackTrace();
-    };
-    enemyMoveUp.interrupt();
-    enemyMoveSide.interrupt();
-    makeCoins.interrupt();
-    thread1.interrupt();
-    thread2.interrupt();
-    thread3.interrupt();
-    hitCheck.interrupt();
-    coinCheck.interrupt();
-
-    timer.setVisible(false);
-    healthPanel.setVisible(false);
-    panel.setVisible(false);
-    character.setVisible(false);
-
     gamePlayInfo.setBounds(0,0,400,400);
     gamePlayInfo.setLayout(null);
     gamePlayInfo.setBackground(new Color(254, 174, 53));
 
-    JLabel WinLose = new JLabel();
       if(coinCount==coinGenerate){
         WinLose.setText("You Win!");
       }
@@ -344,11 +311,6 @@ public class Game extends JFrame {
       }
     WinLose.setFont(new Font("BlockArt", Font.PLAIN, 40));
     WinLose.setBounds(90,75,200,50);
-
-    JLabel CoinData = new JLabel();
-      CoinData.setText("Coins:              \t"+coinCount);
-    JLabel EnemiesHit = new JLabel();
-    EnemiesHit.setText("Enemies Hit:     \t"+(3-ArmorCount));
 
     CoinData.setFont(new Font("BlockArt", Font.PLAIN, 20));
     EnemiesHit.setFont(new Font("BlockArt", Font.PLAIN, 20));
@@ -359,8 +321,33 @@ public class Game extends JFrame {
     gamePlayInfo.add(CoinData);
     gamePlayInfo.add(EnemiesHit);
     gamePlayInfo.add(WinLose);
+    gamePlayInfo.setVisible(false);
 
+    frame = new JFrame(".: Game :.");
+    //frame.setResizable(false);
+    frame.add(character);
+    frame.add(timer);
+    frame.add(healthPanel);
+    frame.add(panel);
+    frame.add(water);
     frame.add(gamePlayInfo);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.pack();
+    frame.setVisible(true);
+    frame.setSize(400,400);
+  }
+
+  public static void gameOver() {
+    character.setVisible(false);
+    timer.setVisible(false);
+    healthPanel.setVisible(false);
+    panel.setVisible(false);
+    water.setVisible(false);
+
+    CoinData.setText("Coins...................\t"+coinCount);
+  EnemiesHit.setText("Enemies Hit:........\t"+(3-ArmorCount));
+
+    gamePlayInfo.setVisible(true);
   }
 
   public static void moveCounter(){
@@ -383,7 +370,8 @@ public class Game extends JFrame {
       }
     } catch (InterruptedException e) {
         e.printStackTrace();
-        thread2.currentThread().interrupt();
+        System.out.println("ERROR!!!!");
+        Thread.currentThread().interrupt();
     }
   }
 
@@ -407,7 +395,7 @@ public class Game extends JFrame {
       }
     } catch (InterruptedException e) {
         e.printStackTrace();
-        thread3.currentThread().interrupt();
+        thread3 = null;
     }
   }
 
@@ -526,7 +514,7 @@ public class Game extends JFrame {
   public static void hitChecker() {
     while(gameIsPlaying == true && enemiesList.size()>1)
     {
-      for(int k=0; k<enemiesList.size()-2; k++)
+      for(int k=0; k<enemiesList.size()-1; k++)
       {
         JLabel enes = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
@@ -544,22 +532,15 @@ public class Game extends JFrame {
             try{
               Thread.sleep(200);
             } catch (InterruptedException e) {
-            e.printStackTrace();
+              e.printStackTrace();
+              Thread.currentThread().interrupt();
             };
           System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
-          MakeSound.playSound("myLeg.wav");
+          //MakeSound.playSound("myLeg.wav");
         }
         if(ArmorCount==0)
         {
           System.out.println("Hit!\tGame Over");
-          enemyMoveUp.interrupt();
-          enemyMoveSide.interrupt();
-          makeCoins.interrupt();
-          thread1.interrupt();
-          thread2.interrupt();
-          thread3.interrupt();
-          hitCheck.interrupt();
-          coinCheck.interrupt();
           gameIsPlaying = false;
           gameOver();
           break;
@@ -608,7 +589,6 @@ public class Game extends JFrame {
   }
 
   public static void motionCoin(JLabel coin){
-
     try {
       while (true) {
         panel.repaint();
@@ -630,6 +610,7 @@ public class Game extends JFrame {
        }
     } catch (InterruptedException e) {
           e.printStackTrace();
+          Thread.currentThread().interrupt();
       };
 
   }
