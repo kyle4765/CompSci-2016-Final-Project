@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.util.*;
 
 public class Game extends JFrame {
 
@@ -62,6 +63,11 @@ public class Game extends JFrame {
   static JLabel CoinData = new JLabel();
   static JLabel EnemiesHit = new JLabel();
   static JPanel water = new JPanel();
+  static boolean playHit = false;
+  static boolean playWin = false;
+  static boolean playCoin = false;
+  static boolean playLose = false;
+  static boolean playStart = false;
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -135,7 +141,7 @@ public class Game extends JFrame {
   };
   static Thread hitCheck = new Thread() {
       public void run() {
-        while (!Thread.currentThread().isInterrupted() && gameIsPlaying==true) {
+        while (!Thread.currentThread().isInterrupted() && gameIsPlaying) {
           hitChecker();
         }
       }
@@ -154,6 +160,63 @@ public class Game extends JFrame {
         }
       }
   };
+  static Thread hitSound = new Thread() {
+      public void run() {
+        while(!Thread.currentThread().isInterrupted()){
+            if (playHit)
+            {
+                MakeSound.playRandomSound("hit");
+                playHit = false;
+            }
+        }
+      }
+  };
+  static Thread winSound = new Thread() {
+    public void run() {
+      while(!Thread.currentThread().isInterrupted()){
+          if (playWin)
+          {
+              MakeSound.playRandomSound("win");
+              playWin = false;
+          }
+      }
+    }
+  };
+  static Thread loseSound = new Thread() {
+    public void run() {
+      while(!Thread.currentThread().isInterrupted()){
+          if (playLose)
+          {
+              MakeSound.playRandomSound("lose");
+              playLose = false;
+          }
+      }
+    }
+  };
+  static Thread startSound = new Thread() {
+    public void run() {
+      while(!Thread.currentThread().isInterrupted()){
+          if (playStart)
+          {
+              MakeSound.playRandomSound("start");
+              playStart = false;
+
+          }
+      }
+    }
+  };
+  static Thread coinSound = new Thread() {
+    public void run() {
+      while(!Thread.currentThread().isInterrupted()){
+          if (playCoin)
+          {
+              MakeSound.playRandomSound("coin");
+              playCoin = false;
+          }
+      }
+    }
+  };
+
 
   public static void main (String [] args) throws InterruptedException{
     for(int k=0; k<ArmorCount; k++)
@@ -170,6 +233,12 @@ public class Game extends JFrame {
 
     displayGame();
 
+    hitSound.start();
+    winSound.start();
+    startSound.start();
+    loseSound.start();
+    coinSound.start();
+
     thread1.start();
     thread2.start();
     thread3.start();
@@ -183,141 +252,7 @@ public class Game extends JFrame {
   public void run(){}
 
   public static void displayGame(){
-    water.setBounds(-200,-200,1500,1500);
-    water.setBackground(new Color(0,0,255));
-    water.setVisible(true);
-
-    panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
-    panel.setLayout(null);
-    panel.setBackground(new Color(141, 214, 116));
-
-    character.setBounds(175,175,50,50);
-    character.setBackground(new Color(255,255,255,0));
-
-    pix = new ImageIcon("Char-Walk-Right.png");
-    characterImage.setIcon(pix);
-    characterImage.setBounds(0,0,50,50);
-    characterImage.setVisible(true);
-    characterImage.setVerticalTextPosition(JLabel.BOTTOM);
-    characterImage.setHorizontalTextPosition(JLabel.CENTER);
-
-    character.add(characterImage);
-
-    timer.setBounds(320,0,80,30);
-    timer.setBackground(new Color(255,255,255,0));
-
-    time = new JLabel("Time:  "+timerRemaining);
-    time.setBounds(0,-5,80,30);
-    timer.add(time);
-
-    healthPanel.setBounds(210,-5,110,30);
-    healthPanel.setBackground(new Color(255,255,255,0));
-
-    frame.getContentPane().add(panel);
-
-    panel.addKeyListener(new KeyListener() {
-
-      @Override
-      public void keyTyped(KeyEvent e) {
-      }
-
-      @Override
-      public void keyPressed(KeyEvent e) {
-
-        //Left
-        if(e.getKeyCode() == 37 ){
-         if( !(PanelXCoord+10>185)){
-            PanelXCoord+=10;
-            if(WalkOrRun == 0){
-              pix = new ImageIcon("Char-Run-Left.png");
-              WalkOrRun++;
-            }
-            else{
-              pix = new ImageIcon("Char-Walk-Left.png");
-              WalkOrRun--;
-            }
-            characterImage.setIcon(pix);
-          }
-        }
-        //Right
-        else if (e.getKeyCode() == 39 ){
-         if( !(PanelXCoord-10<-985)){
-            PanelXCoord-=10;
-            if(WalkOrRun == 0){
-              pix = new ImageIcon("Char-Run-Right.png");
-              WalkOrRun++;
-            }
-            else{
-              pix = new ImageIcon("Char-Walk-Right.png");
-              WalkOrRun--;
-            }
-            characterImage.setIcon(pix);
-          }
-        }
-        //Up
-        else if (e.getKeyCode() == 38 ){
-           if( !(PanelYCoord+10>175)){
-              PanelYCoord+=10;
-            if(WalkOrRun == 0){
-              pix = new ImageIcon("Char-Run-Right.png");
-              WalkOrRun++;
-            }
-            else{
-              pix = new ImageIcon("Char-Walk-Right.png");
-              WalkOrRun--;
-            }
-            characterImage.setIcon(pix);
-          }
-        }
-        //Down
-        else if (e.getKeyCode() == 40 ){
-           if( !(PanelYCoord-10<-975)){
-              PanelYCoord-=10;
-            if(WalkOrRun == 0){
-              pix = new ImageIcon("Char-Run-Left.png");
-              WalkOrRun++;
-            }
-            else{
-              pix = new ImageIcon("Char-Walk-Left.png");
-              WalkOrRun--;
-            }
-            characterImage.setIcon(pix);
-          }
-        }
-
-
-
-        panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
-        panel.repaint();
-        frame.repaint();
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-      }
-    });
-
-    panel.setFocusable(true);
-    panel.requestFocusInWindow();
-
-    gamePlayInfo.setBounds(0,0,400,400);
-    gamePlayInfo.setLayout(null);
-    gamePlayInfo.setBackground(new Color(254, 174, 53));
-
-
-    WinLose.setFont(new Font("BlockArt", Font.PLAIN, 40));
-    WinLose.setBounds(90,75,200,50);
-
-    CoinData.setFont(new Font("BlockArt", Font.PLAIN, 20));
-    EnemiesHit.setFont(new Font("BlockArt", Font.PLAIN, 20));
-
-    CoinData.setBounds(90,125,300,50);
-    EnemiesHit.setBounds(90,160,300,50);
-
-    gamePlayInfo.add(CoinData);
-    gamePlayInfo.add(EnemiesHit);
-    gamePlayInfo.add(WinLose);
-    gamePlayInfo.setVisible(false);
+    gameNew();
 
     frame = new JFrame(".: Game :.");
     //frame.setResizable(false);
@@ -331,6 +266,57 @@ public class Game extends JFrame {
     frame.pack();
     frame.setVisible(true);
     frame.setSize(400,400);
+  }
+
+  public static void gameReset() {
+    System.out.println("RESET");
+    healthList = null;
+    enemiesList = null;
+    explodeList = null;
+    coinList = null;
+    coinCount = 0;
+
+    Thread hitCheckRestart = hitCheck;
+    hitCheckRestart.start();
+
+    gameIsPlaying = true;
+    timerRemaining = 60;
+    ArmorCount = 3;
+
+    for(int k=0; k<ArmorCount; k++)
+    {
+      JLabel health1 = new JLabel(healthIcon);
+      //healthList.add(health1);
+      health1.setBounds(0,0,30,30);
+      healthPanel.add(health1);
+    }
+
+    //////////
+
+    gameNew();
+
+    /*
+    water.setBounds(-200,-200,1500,1500);
+    water.setBackground(new Color(0,0,255));
+    water.setVisible(true);
+
+    panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
+    panel.setLayout(null);
+    panel.setBackground(new Color(141, 214, 116));
+
+    character.setBounds(175,175,50,50);
+    character.setBackground(new Color(255,255,255,0));
+
+    character.setVisible(true);
+    timer.setVisible(true);
+    healthPanel.setVisible(true);
+    panel.setVisible(true);
+    water.setVisible(true);
+    */
+    /////////
+
+    frame.repaint();
+    panel.repaint();
   }
 
   public static void gameOver() {
@@ -351,6 +337,13 @@ public class Game extends JFrame {
     EnemiesHit.setText("Enemies Hit:........\t"+(3-ArmorCount));
 
     gamePlayInfo.setVisible(true);
+
+    try{
+      Thread.sleep(2000);
+    } catch (InterruptedException e){
+    };
+
+    gameReset();
   }
 
   public static void moveCounter(){
@@ -519,19 +512,20 @@ public class Game extends JFrame {
     {
       for(int k=0; k<enemiesList.size()-1; k++)
       {
-        JLabel enes = enemiesList.get(k);
+        JLabel enemy = enemiesList.get(k);
         int CharacterX = (int)characterImage.getLocationOnScreen().getX();
         int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-        int EnemyX = (int)enes.getLocationOnScreen().getX();
-        int EnemyY = (int)enes.getLocationOnScreen().getY();
+        int EnemyX = (int)enemy.getLocationOnScreen().getX();
+        int EnemyY = (int)enemy.getLocationOnScreen().getY();
 
         if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
           explodeList.set(k, new Boolean(true));
           ImageIcon blank = new ImageIcon("thisisnothing");
           healthList.get(ArmorCount-1).setIcon(blank);
           ArmorCount--;
+          playHit = true;
 
-          enes.setIcon(explosion);
+          enemy.setIcon(explosion);
             try{
               Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -573,9 +567,7 @@ public class Game extends JFrame {
         if( (CharacterX > CoinX-40 && CharacterX < CoinX+40) && (CharacterY > CoinY-40 && CharacterY < CoinY+40) ){
           ImageIcon blank = new ImageIcon("thisisnothing");
           cos.setLocation(-50,-50);
-          //cos.setIcon(blank);
           coinCount++;
-          //coinList.remove(cos);
           System.out.println( (coinGenerate-coinCount)+" Coins Remaing");
         }
 
@@ -585,10 +577,8 @@ public class Game extends JFrame {
           System.out.println("You Win!");
           gameOver();
         }
-
       }
     }
-
   }
 
   public static void motionCoin(JLabel coin){
@@ -618,4 +608,144 @@ public class Game extends JFrame {
 
   }
 
+  public static void gameNew(){
+    water.setBounds(-200,-200,1500,1500);
+    water.setBackground(new Color(0,0,255));
+    water.setVisible(true);
+
+    panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
+    panel.setLayout(null);
+    panel.setBackground(new Color(141, 214, 116));
+
+    character.setBounds(175,175,50,50);
+    character.setBackground(new Color(255,255,255,0));
+
+    pix = new ImageIcon("Char-Walk-Right.png");
+    characterImage.setIcon(pix);
+    characterImage.setBounds(0,0,50,50);
+    characterImage.setVisible(true);
+    characterImage.setVerticalTextPosition(JLabel.BOTTOM);
+    characterImage.setHorizontalTextPosition(JLabel.CENTER);
+
+    character.add(characterImage);
+
+    timer.setBounds(320,0,80,30);
+    timer.setBackground(new Color(255,255,255,0));
+
+    time = new JLabel("Time:  "+timerRemaining);
+    time.setBounds(0,-5,80,30);
+    timer.add(time);
+
+    healthPanel.setBounds(210,-5,110,30);
+    healthPanel.setBackground(new Color(255,255,255,0));
+
+    frame.getContentPane().add(panel);
+
+    panel.addKeyListener(new KeyListener() {
+
+      @Override
+      public void keyTyped(KeyEvent e) {
+      }
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+
+        //Left
+        if(e.getKeyCode() == 37 ){
+         if( !(PanelXCoord+10>185)){
+            PanelXCoord+=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Left.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Left.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
+        }
+        //Right
+        else if (e.getKeyCode() == 39 ){
+         if( !(PanelXCoord-10<-985)){
+            PanelXCoord-=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Right.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Right.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
+        }
+        //Up
+        else if (e.getKeyCode() == 38 ){
+           if( !(PanelYCoord+10>175)){
+              PanelYCoord+=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Right.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Right.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
+        }
+        //Down
+        else if (e.getKeyCode() == 40 ){
+           if( !(PanelYCoord-10<-975)){
+              PanelYCoord-=10;
+            if(WalkOrRun == 0){
+              pix = new ImageIcon("Char-Run-Left.png");
+              WalkOrRun++;
+            }
+            else{
+              pix = new ImageIcon("Char-Walk-Left.png");
+              WalkOrRun--;
+            }
+            characterImage.setIcon(pix);
+          }
+        }
+
+        panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
+        panel.repaint();
+        frame.repaint();
+      }
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+      }
+    });
+
+    panel.setFocusable(true);
+    panel.requestFocusInWindow();
+
+    gamePlayInfo.setBounds(0,0,400,400);
+    gamePlayInfo.setLayout(null);
+    gamePlayInfo.setBackground(new Color(254, 174, 53));
+
+    WinLose.setFont(new Font("BlockArt", Font.PLAIN, 40));
+    WinLose.setBounds(90,75,200,50);
+
+    CoinData.setFont(new Font("BlockArt", Font.PLAIN, 20));
+    EnemiesHit.setFont(new Font("BlockArt", Font.PLAIN, 20));
+
+    CoinData.setBounds(90,125,300,50);
+    EnemiesHit.setBounds(90,160,300,50);
+
+    gamePlayInfo.add(CoinData);
+    gamePlayInfo.add(EnemiesHit);
+    gamePlayInfo.add(WinLose);
+    gamePlayInfo.setVisible(false);
+
+    character.setVisible(true);
+    timer.setVisible(true);
+    healthPanel.setVisible(true);
+    panel.setVisible(true);
+    water.setVisible(true);
+  }
 }
