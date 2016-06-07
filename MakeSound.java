@@ -80,7 +80,7 @@ public class MakeSound {
       switch (group)
       {
       case "hit"   : options = new String[]{"Wilhelm.wav", "myLeg.wav"}; break;
-      case "coin"  : options = new String[]{}; break;
+      case "coin"  : options = new String[]{"Mario-coin-sound.wav"}; break;
       case "win"   : options = new String[]{"FiestaTrio.wav"}; break;
       case "start" : options = new String[]{}; break;
       case "lose"  : options = new String[]{}; break;
