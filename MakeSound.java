@@ -1,6 +1,12 @@
 import java.io.File;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.util.*; 
+=======
+
+import java.util.*;
+
+>>>>>>> origin/master
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
