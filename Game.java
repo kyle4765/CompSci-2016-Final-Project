@@ -10,7 +10,11 @@ import java.util.*;
 
 public class Game extends JFrame {
 
+  static JPanel startScreen = new JPanel();
+
   public void init() {
+    displayGame();
+
     panel.setFocusable(true);
     panel.requestFocusInWindow();
   }
@@ -68,6 +72,7 @@ public class Game extends JFrame {
   static boolean playCoin = false;
   static boolean playLose = false;
   static boolean playStart = false;
+  static boolean startGame = false;
 
   //Threads
   static Thread thread1 = new Thread() {
@@ -217,7 +222,6 @@ public class Game extends JFrame {
     }
   };
 
-
   public static void main (String [] args) throws InterruptedException{
     for(int k=0; k<ArmorCount; k++)
     {
@@ -227,24 +231,7 @@ public class Game extends JFrame {
       healthPanel.add(health1);
     }
 
-    enemyMoveUp.start();
-    enemyMoveSide.start();
-    makeCoins.start();
-
     displayGame();
-
-    hitSound.start();
-    winSound.start();
-    startSound.start();
-    loseSound.start();
-    coinSound.start();
-
-    thread1.start();
-    thread2.start();
-    thread3.start();
-    hitCheck.start();
-    coinCheck.start();
-    stopFlashing.start();
 
     //gameOver();
   }
@@ -256,6 +243,7 @@ public class Game extends JFrame {
 
     frame = new JFrame(".: Game :.");
     //frame.setResizable(false);
+    frame.add(startScreen);
     frame.add(character);
     frame.add(timer);
     frame.add(healthPanel);
@@ -277,6 +265,7 @@ public class Game extends JFrame {
     coinCount = 0;
 
     Thread hitCheckRestart = hitCheck;
+    hitCheckRestart = null;
     hitCheckRestart.start();
 
     gameIsPlaying = true;
@@ -317,6 +306,8 @@ public class Game extends JFrame {
 
     frame.repaint();
     panel.repaint();
+    water.repaint();
+    character.repaint();
   }
 
   public static void gameOver() {
@@ -397,7 +388,7 @@ public class Game extends JFrame {
 
   public static void timerStart(int t){
     try {
-      while (timerRemaining>0 && gameIsPlaying==true) {
+      while (timerRemaining>0 && gameIsPlaying) {
           timerRemaining--;
           Thread.sleep(1000);
           time.setText("Time:  "+timerRemaining);
@@ -633,6 +624,7 @@ public class Game extends JFrame {
     timer.setBackground(new Color(255,255,255,0));
 
     time = new JLabel("Time:  "+timerRemaining);
+    time.setText("Time:  "+timerRemaining);
     time.setBounds(0,-5,80,30);
     timer.add(time);
 
@@ -649,6 +641,31 @@ public class Game extends JFrame {
 
       @Override
       public void keyPressed(KeyEvent e) {
+
+        if(startGame == false){
+          startGame = true;
+
+          startScreen.setVisible(false);
+          panel.setFocusable(true);
+          panel.requestFocusInWindow();
+
+          enemyMoveUp.start();
+          enemyMoveSide.start();
+          makeCoins.start();
+
+          hitSound.start();
+          winSound.start();
+          startSound.start();
+          loseSound.start();
+          coinSound.start();
+
+          thread1.start();
+          thread2.start();
+          thread3.start();
+          hitCheck.start();
+          coinCheck.start();
+          stopFlashing.start();
+        }
 
         //Left
         if(e.getKeyCode() == 37 ){
@@ -736,6 +753,9 @@ public class Game extends JFrame {
 
     CoinData.setBounds(90,125,300,50);
     EnemiesHit.setBounds(90,160,300,50);
+
+    startScreen.setBounds(0,0,400,400);
+    startScreen.setBackground(new Color(254, 174, 53));
 
     gamePlayInfo.add(CoinData);
     gamePlayInfo.add(EnemiesHit);
