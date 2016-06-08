@@ -11,6 +11,8 @@ import java.util.*;
 public class Game extends JFrame {
 
   static JPanel startScreen = new JPanel();
+  static JLabel gameName = new JLabel();
+  static JLabel info = new JLabel();
 
   public void init() {
     displayGame();
@@ -756,6 +758,22 @@ public class Game extends JFrame {
 
     startScreen.setBounds(0,0,400,400);
     startScreen.setBackground(new Color(254, 174, 53));
+    
+    startScreen.setLayout(null);
+    
+    
+    
+    gameName.setText("Synergy Man");
+    info.setText("Press any key to play");
+    
+    gameName.setBounds(75,50,250,50);
+    info.setBounds(60,200,300,40);
+
+    gameName.setFont(new Font("BlockArt", Font.PLAIN, 25));
+    info.setFont(new Font("BlockArt", Font.PLAIN, 20));
+    
+    startScreen.add(gameName);
+    startScreen.add(info);
 
     gamePlayInfo.add(CoinData);
     gamePlayInfo.add(EnemiesHit);
