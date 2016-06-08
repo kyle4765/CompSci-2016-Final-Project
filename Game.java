@@ -758,20 +758,18 @@ public class Game extends JFrame {
 
     startScreen.setBounds(0,0,400,400);
     startScreen.setBackground(new Color(254, 174, 53));
-    
+
     startScreen.setLayout(null);
-    
-    
-    
+
     gameName.setText("Synergy Man");
     info.setText("Press any key to play");
-    
-    gameName.setBounds(75,50,250,50);
-    info.setBounds(60,200,300,40);
 
-    gameName.setFont(new Font("BlockArt", Font.PLAIN, 25));
-    info.setFont(new Font("BlockArt", Font.PLAIN, 20));
-    
+    gameName.setBounds(20,80,380,50);
+    info.setBounds(35,200,380,40);
+
+    gameName.setFont(new Font("BlockArt", Font.PLAIN, 50));
+    info.setFont(new Font("BlockArt", Font.PLAIN, 25));
+
     startScreen.add(gameName);
     startScreen.add(info);
 
