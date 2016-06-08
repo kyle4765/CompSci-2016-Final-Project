@@ -82,8 +82,8 @@ public class MakeSound {
       case "hit"   : options = new String[]{"Wilhelm.wav", "myLeg.wav"}; break;
       case "coin"  : options = new String[]{"Mario-coin-sound.wav"}; break;
       case "win"   : options = new String[]{"FiestaTrio.wav"}; break;
-      case "start" : options = new String[]{}; break;
-      case "lose"  : options = new String[]{}; break;
+      case "start" : options = new String[]{"BoxingBellStart.wav"}; break;
+      case "lose"  : options = new String[]{"buzzer.wav"}; break;
       }
       Random r = new Random();
       int index = r.nextInt(options.length);
