@@ -55,7 +55,7 @@ public class Game extends JFrame {
   static int sleepTime = 20;
   static int enemyAmount = 10;
   static int coinGenerate = 5;
-  static int timerRemaining = 59;
+  static int timerRemaining = 60;
   static ImageIcon explosion = new ImageIcon("Explosion.png");
   static ImageIcon healthIcon = new ImageIcon("Armor.png");
   static JPanel healthPanel = new JPanel();
@@ -259,51 +259,69 @@ public class Game extends JFrame {
   }
 
   public static void gameReset() {
+    //Game reset = new Game();
+
     System.out.println("RESET");
     healthList = null;
     enemiesList = null;
     explodeList = null;
     coinList = null;
+    healthList = null;
     coinCount = 0;
-
-    Thread hitCheckRestart = hitCheck;
-    hitCheck = null;
-    hitCheckRestart.start();
-
-    Thread thread1Restart = thread1;
-    thread1 = null;
-    thread1Restart.start();
-
-    Thread thread2Restart = thread2;
-    thread2 = null;
-    thread2Restart.start();
-
-    Thread thread3Restart = thread3;
-    thread3 = null;
-    thread3Restart.start();
-
-    Thread enemyMoveSideRestart = enemyMoveSide;
-    enemyMoveSide = null;
-    enemyMoveSideRestart.start();
-
-    Thread enemyMoveUpRestart = enemyMoveUp;
-    enemyMoveUp = null;
-    enemyMoveUpRestart.start();
-
-    Thread makeCoinsRestart = makeCoins;
-    makeCoins = null;
-    makeCoinsRestart.start();
-
-    Thread coinCheckRestart = coinCheck;
-    coinCheck = null;
-    coinCheckRestart.start();
-
     gameIsPlaying = true;
     timerRemaining = 60;
     ArmorCount = 3;
+    movementCount = 0;
+    WalkOrRun = 0;
+    playHit = false;
+    playWin = false;
+    playCoin = false;
+    playLose = false;
+    playStart = false;
+    startGame = false;
 
-    /*
-    healthList = null;
+    for(int k=0; k<ArmorCount; k++)
+    {
+      JLabel health1 = new JLabel(healthIcon);
+      //healthList.add(health1);
+      health1.setBounds(0,0,30,30);
+      healthPanel.add(health1);
+    }
+
+    displayGame();
+
+
+    Thread hitCheckRestart = hitCheck;
+    hitCheck.suspend();
+    hitCheckRestart.start();
+
+    Thread thread1Restart = thread1;
+    thread1.suspend();
+    thread1Restart.start();
+
+    Thread thread2Restart = thread2;
+    thread2.suspend();
+    thread2Restart.start();
+
+    Thread thread3Restart = thread3;
+    thread3.suspend();
+    thread3Restart.start();
+
+    Thread enemyMoveSideRestart = enemyMoveSide;
+    enemyMoveSide.suspend();
+    enemyMoveSideRestart.start();
+
+    Thread enemyMoveUpRestart = enemyMoveUp;
+    enemyMoveUp.suspend();
+    enemyMoveUpRestart.start();
+
+    Thread makeCoinsRestart = makeCoins;
+    makeCoins.suspend();
+    makeCoinsRestart.start();
+
+    Thread coinCheckRestart = coinCheck;
+    coinCheck.suspend();
+    coinCheckRestart.start();
 
     for(int k=0; k<ArmorCount; k++)
     {
@@ -312,34 +330,12 @@ public class Game extends JFrame {
       health1.setBounds(0,0,30,30);
       healthPanel.add(health1);
     }
-*/
+
     //////////
 
-    gameNew();
+    //gameNew();
 
-    /*
-    water.setBounds(-200,-200,1500,1500);
-    water.setBackground(new Color(0,0,255));
-    water.setVisible(true);
-
-    panel.setBounds(PanelXCoord,PanelYCoord,1200,1200);
-    panel.setLayout(null);
-    panel.setBackground(new Color(141, 214, 116));
-
-    character.setBounds(175,175,50,50);
-    character.setBackground(new Color(255,255,255,0));
-
-    character.setVisible(true);
-    timer.setVisible(true);
-    healthPanel.setVisible(true);
-    panel.setVisible(true);
-    water.setVisible(true);
-    */
     /////////
-    panel.repaint();
-    water.repaint();
-    character.repaint();
-    frame.repaint();
 
   }
 
@@ -366,7 +362,7 @@ public class Game extends JFrame {
       Thread.sleep(2000);
     } catch (InterruptedException e){
     };
-
+    gameIsPlaying = false;
     gameReset();
   }
 
@@ -532,40 +528,38 @@ public class Game extends JFrame {
   }
 
   public static void hitChecker() {
-    while(gameIsPlaying == true && enemiesList.size()>1)
+    for(int k=0; k<enemiesList.size()-1; k++)
     {
-      for(int k=0; k<enemiesList.size()-1; k++)
+      JLabel enemy = enemiesList.get(k);
+      int CharacterX = (int)characterImage.getLocationOnScreen().getX();
+      int CharacterY = (int)characterImage.getLocationOnScreen().getY();
+      int EnemyX = (int)enemy.getLocationOnScreen().getX();
+      int EnemyY = (int)enemy.getLocationOnScreen().getY();
+
+      if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
+        explodeList.set(k, new Boolean(true));
+        ImageIcon blank = new ImageIcon("thisisnothing");
+        healthList.get(ArmorCount-1).setIcon(blank);
+        ArmorCount--;
+        playHit = true;
+
+        enemy.setIcon(explosion);
+          try{
+            Thread.sleep(200);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+          };
+        System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
+        //MakeSound.playSound("myLeg.wav");
+      }
+      if(ArmorCount==0)
       {
-        JLabel enemy = enemiesList.get(k);
-        int CharacterX = (int)characterImage.getLocationOnScreen().getX();
-        int CharacterY = (int)characterImage.getLocationOnScreen().getY();
-        int EnemyX = (int)enemy.getLocationOnScreen().getX();
-        int EnemyY = (int)enemy.getLocationOnScreen().getY();
-
-        if( (CharacterX > EnemyX-40 && CharacterX < EnemyX+40) && (CharacterY > EnemyY-40 && CharacterY < EnemyY+40) && (explodeList.get(k).booleanValue() == false)){
-          explodeList.set(k, new Boolean(true));
-          ImageIcon blank = new ImageIcon("thisisnothing");
-          healthList.get(ArmorCount-1).setIcon(blank);
-          ArmorCount--;
-          playHit = true;
-
-          enemy.setIcon(explosion);
-            try{
-              Thread.sleep(200);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-              Thread.currentThread().interrupt();
-            };
-          System.out.println("Hit -- "+ArmorCount+" Lives Remaining");
-          //MakeSound.playSound("myLeg.wav");
-        }
-        if(ArmorCount==0)
-        {
-          System.out.println("Hit!\tGame Over");
-          gameIsPlaying = false;
-          gameOver();
-          break;
-        }
+        System.out.println("Hit!\tGame Over");
+        gameIsPlaying = false;
+        gameOver();
+        System.out.println(ArmorCount);
+        return;
       }
     }
   }
