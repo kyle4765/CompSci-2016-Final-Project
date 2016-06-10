@@ -267,21 +267,52 @@ public class Game extends JFrame {
     coinCount = 0;
 
     Thread hitCheckRestart = hitCheck;
-    hitCheckRestart = null;
+    hitCheck = null;
     hitCheckRestart.start();
+
+    Thread thread1Restart = thread1;
+    thread1 = null;
+    thread1Restart.start();
+
+    Thread thread2Restart = thread2;
+    thread2 = null;
+    thread2Restart.start();
+
+    Thread thread3Restart = thread3;
+    thread3 = null;
+    thread3Restart.start();
+
+    Thread enemyMoveSideRestart = enemyMoveSide;
+    enemyMoveSide = null;
+    enemyMoveSideRestart.start();
+
+    Thread enemyMoveUpRestart = enemyMoveUp;
+    enemyMoveUp = null;
+    enemyMoveUpRestart.start();
+
+    Thread makeCoinsRestart = makeCoins;
+    makeCoins = null;
+    makeCoinsRestart.start();
+
+    Thread coinCheckRestart = coinCheck;
+    coinCheck = null;
+    coinCheckRestart.start();
 
     gameIsPlaying = true;
     timerRemaining = 60;
     ArmorCount = 3;
 
+    /*
+    healthList = null;
+
     for(int k=0; k<ArmorCount; k++)
     {
       JLabel health1 = new JLabel(healthIcon);
-      //healthList.add(health1);
+      healthList.add(health1);
       health1.setBounds(0,0,30,30);
       healthPanel.add(health1);
     }
-
+*/
     //////////
 
     gameNew();
@@ -305,11 +336,11 @@ public class Game extends JFrame {
     water.setVisible(true);
     */
     /////////
-
-    frame.repaint();
     panel.repaint();
     water.repaint();
     character.repaint();
+    frame.repaint();
+
   }
 
   public static void gameOver() {
